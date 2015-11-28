@@ -3,5 +3,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="/home/ubuntu/opt/gurobi605/linux64/lib/gurobi.jar"/>
+	<classpathentry kind="lib" path="src/gson-2.5.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
