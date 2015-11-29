@@ -114,6 +114,7 @@ public class StudentScheduleModel {
 					semesterCourseLimitConstraint.addTerm(1, mOptimizedSchedule[j]);
 				}
 				model.addConstr(semesterCourseLimitConstraint, GRB.EQUAL, 2, "SEMESTER_CLASS_LIMIT_student_" + i);
+				model.addConstr(semesterCourseLimitConstraint, GRB.GREATER_EQUAL, 1, "SEMESTER_CLASS_LIMIT_student_" + i);
 				
 			}
 		}
