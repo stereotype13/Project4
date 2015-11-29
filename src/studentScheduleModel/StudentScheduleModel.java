@@ -22,7 +22,7 @@ public class StudentScheduleModel {
 	private int nClassesOffered;
 	
 	private static final int SEMESTER_COURSE_LIMIT = 2;
-	private static final int MAX_CLASS_CAPACITY = 10;
+	private static final int MAX_CLASS_CAPACITY = 100;
 	
 	//Prequisite matrix
 	private int[][] P = {
@@ -113,7 +113,7 @@ public class StudentScheduleModel {
 				for (int j = 0; j < nClassesOffered; ++j) {
 					semesterCourseLimitConstraint.addTerm(1, mOptimizedSchedule[j]);
 				}
-				model.addConstr(semesterCourseLimitConstraint, GRB.EQUAL, 2, "SEMESTER_CLASS_LIMIT_student_" + i);
+				model.addConstr(semesterCourseLimitConstraint, GRB.LESS_EQUAL, 2, "SEMESTER_CLASS_LIMIT_student_" + i);
 				model.addConstr(semesterCourseLimitConstraint, GRB.GREATER_EQUAL, 1, "SEMESTER_CLASS_LIMIT_student_" + i);
 				
 			}
