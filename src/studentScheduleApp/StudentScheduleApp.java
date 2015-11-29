@@ -10,9 +10,6 @@ public class StudentScheduleApp {
 	private JSONFileReader mJFR;
 	private StudentScheduleModel mSsm;
 	
-	private static final int SEMESTERS = 12;
-	private static final int AVAILABLE_COURSES = 18;
-	
 	public StudentScheduleApp(String[] commandLineArgs) {
 		this.mClp = new CommandLineParser(commandLineArgs);
 		this.mJFR = new JSONFileReader(mClp.getFilePath());

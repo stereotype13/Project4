@@ -11,7 +11,6 @@ public class StudentScheduleModel {
 	private int[] mProposedSchedule;
 	private int[] mCurrentEnrollment;
 	private int[] mClassPriorities;
-	//private GRBVar[] mOptimizedSchedule;
 	private GRBVar[] mOptimizedSchedule;
 	private GRBVar x;
 	private GRBEnv env;
@@ -87,8 +86,7 @@ public class StudentScheduleModel {
 		mClassPriorities = mInputModel.getStudentSchedule().getClassPriorities();
 
 		for (int i = 0; i < nClassesOffered; ++i) {
-			//mProposedSchedule[i] = model.addVar(0, 1, 1, GRB.BINARY, "class_" + i);
-			//mOptimizedSchedule.addTerm(1, model.addVar(0, 1, 1, GRB.INTEGER, null));
+			
 			mOptimizedSchedule[i] = model.addVar(0, 1, 1, GRB.INTEGER, "class_" + i);
 		}
 	
@@ -206,8 +204,7 @@ public class StudentScheduleModel {
 			setMaxCoursesConstraint();
 			setStudentMustTakeClassesFromProposedScheduleConstraint();
 			setMaxClassCapacityConstraint();
-			//setPrerequisiteConstraint();
-			//setClassAvailabilityConstraint();
+			
 			setPriorityConstraint();
 			model.setObjective(obj);
 			

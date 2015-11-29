@@ -14,21 +14,8 @@ public class Project4 {
 		Gson gson = new GsonBuilder().create();
 		
 		StudentScheduleApp theApp = new StudentScheduleApp(args);
-		//MasterSchedule ms = gson.fromJson("{MASTER_SCHEDULE : [[0, 1],[1,0]]}", MasterSchedule.class);
-		//JSONParser jsonParser = new JSONParser("{MS : {MASTER_SCHEDULE : [[1, 0, 0, 1],[0, 1, 1, 0],[0, 1, 0, 1]]}, SS : {STUDENT_SCHEDULE : [1, 1, 0, 1], CLASS_PRIORITIES : [1, 2, 0, 3]}}");
-		MasterSchedule ms = gson.fromJson("{MASTER_SCHEDULE : [[1, 0, 0, 1],[0, 1, 1, 0],[0, 1, 0, 1]]}", MasterSchedule.class);
-		StudentSchedule ss = gson.fromJson("{STUDENT_SCHEDULE : [1, 1, 0, 1], CLASS_PRIORITIES : [1, 2, 0, 3]}", StudentSchedule.class);
-		InputModel im = gson.fromJson("{MS : {MASTER_SCHEDULE : [[1, 0, 0, 1],[0, 1, 1, 0],[0, 1, 0, 1]]}, SS : {STUDENT_SCHEDULE : [1, 1, 0, 1], CLASS_PRIORITIES : [1, 2, 0, 3]}}", InputModel.class);
-		//System.out.println(im.toString());
+		
 		theApp.run();
-		ms.getCurrentEnrollment();
-		System.out.println(ms.toString());
-		System.out.println(ss.toString());
-		System.out.println(im.toString());
-
-		//test
-		//StudentSchedule ss = gson.fromJson("{STUDENT_SCHEDULE : [1, 1, 0, 1], CLASS_PRIORITIES : [1, 2, 0, 3]}", StudentSchedule.class);
-
-		//System.out.println(gson.toJson(im));
+		
 	}
 }

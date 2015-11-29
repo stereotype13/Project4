@@ -14,7 +14,7 @@ public class InputModel {
 	public InputModel(MasterSchedule ms, StudentSchedule ss) {
 		MS = ms;
 		SS = ss;
-		//Gson gson = GsonBuilder().create();
+	
 		mGson = new GsonBuilder().create();
 	}
 
