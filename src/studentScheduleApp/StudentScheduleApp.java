@@ -1,12 +1,13 @@
 package studentScheduleApp;
 
-import studentFileReader.StudentFileReader;
+import jsonFileReader.JSONFileReader;
+import jsonParser.JSONParser;
 import studentScheduleModel.StudentScheduleModel;
 import commandLineParser.CommandLineParser;
 
 public class StudentScheduleApp {
 	private CommandLineParser mClp;
-	private StudentFileReader mSfr;
+	private JSONFileReader mJFR;
 	private StudentScheduleModel mSsm;
 	
 	private static final int SEMESTERS = 12;
@@ -14,8 +15,8 @@ public class StudentScheduleApp {
 	
 	public StudentScheduleApp(String[] commandLineArgs) {
 		this.mClp = new CommandLineParser(commandLineArgs);
-		this.mSfr = new StudentFileReader(mClp.getFilePath(), AVAILABLE_COURSES);
-		this.mSsm = new StudentScheduleModel(mSfr.read(), SEMESTERS, AVAILABLE_COURSES);
+		this.mJFR = new JSONFileReader(mClp.getFilePath());
+		this.mSsm = new StudentScheduleModel(new JSONParser(mJFR.read()).getInputModel());
 	}
 	
 	public void run() {

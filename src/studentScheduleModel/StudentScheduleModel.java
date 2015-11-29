@@ -1,9 +1,18 @@
 package studentScheduleModel;
 
 import gurobi.*;
+import inputModel.InputModel;
+
+import outputModel.OutputModel;
 
 public class StudentScheduleModel {
+	private InputModel mInputModel;
 	private GRBVar[][][] y_ijk;
+	private int[] mProposedSchedule;
+	private int[] mCurrentEnrollment;
+	private int[] mClassPriorities;
+	//private GRBVar[] mOptimizedSchedule;
+	private GRBVar[] mOptimizedSchedule;
 	private GRBVar x;
 	private GRBEnv env;
 	private GRBModel model;
@@ -14,6 +23,7 @@ public class StudentScheduleModel {
 	private int nClassesOffered;
 	
 	private static final int SEMESTER_COURSE_LIMIT = 2;
+	private static final int MAX_CLASS_CAPACITY = 10;
 	
 	//Prequisite matrix
 	private int[][] P = {
@@ -63,26 +73,32 @@ public class StudentScheduleModel {
 
 		env = new GRBEnv();
 		model = new GRBModel(env);
-	
-	
-		y_ijk = new GRBVar[nStudents][nClassesOffered][nSemesters];
-		
-		for (int i = 0; i < nStudents; ++i) {
-			//for each student
-			for (int j = 0; j < nClassesOffered; ++j) {
-				//for each class offered
-				for (int k = 0; k < nSemesters; ++k) {
-					//for each semester
-					y_ijk[i][j][k] = model.addVar(0, 1, 1, GRB.BINARY, "y_" + i + "_" + j + "_" + k);
-				}
-			}
+
+		nStudents = 1;
+		nSemesters = 1;
+
+		mProposedSchedule = mInputModel.getStudentSchedule().getStudentSchedule();
+		nClassesOffered = mProposedSchedule.length;
+
+		mOptimizedSchedule = new GRBVar[nClassesOffered];
+
+		mCurrentEnrollment = mInputModel.getMasterSchedule().getCurrentEnrollment();
+
+		mClassPriorities = mInputModel.getStudentSchedule().getClassPriorities();
+
+		for (int i = 0; i < nClassesOffered; ++i) {
+			//mProposedSchedule[i] = model.addVar(0, 1, 1, GRB.BINARY, "class_" + i);
+			//mOptimizedSchedule.addTerm(1, model.addVar(0, 1, 1, GRB.INTEGER, null));
+			mOptimizedSchedule[i] = model.addVar(0, 1, 1, GRB.INTEGER, "class_" + i);
 		}
+	
+	
 		
 		
 		x = model.addVar(0, GRB.INFINITY, 1, GRB.INTEGER, null);
 		obj = new GRBLinExpr();
 		obj.addTerm(1, x);
-		
+	
 		
 		model.set(GRB.IntAttr.ModelSense, 1);
 		model.update();
@@ -97,22 +113,22 @@ public class StudentScheduleModel {
 				//...for each semester
 				GRBLinExpr semesterCourseLimitConstraint = new GRBLinExpr();
 				for (int j = 0; j < nClassesOffered; ++j) {
-					semesterCourseLimitConstraint.addTerm(1, y_ijk[i][j][k]);
+					semesterCourseLimitConstraint.addTerm(1, mOptimizedSchedule[j]);
 				}
-				model.addConstr(semesterCourseLimitConstraint, GRB.LESS_EQUAL, 2, "SEMESTER_CLASS_LIMIT_student_" + i + "_semester_" + k);
+				model.addConstr(semesterCourseLimitConstraint, GRB.EQUAL, 2, "SEMESTER_CLASS_LIMIT_student_" + i);
 				
 			}
 		}
 	}
 	
-	private void setStudentMustTakeEachClassInListConstraint() throws GRBException {
+	private void setStudentMustTakeClassesFromProposedScheduleConstraint() throws GRBException {
 		for (int i = 0; i < nStudents; i++) {		
 			for (int j = 0; j < nClassesOffered; j++) {
-				GRBLinExpr studentMustTakeEachClassInListConstraint = new GRBLinExpr();
+				GRBLinExpr studentMustTakeClassesFromProposedScheduleConstraint = new GRBLinExpr();
 				for (int k = 0; k < nSemesters; k++) {
-					studentMustTakeEachClassInListConstraint.addTerm(1, y_ijk[i][j][k]);
+					studentMustTakeClassesFromProposedScheduleConstraint.addTerm(1, mOptimizedSchedule[j]);
 				}
-				model.addConstr(studentMustTakeEachClassInListConstraint, GRB.EQUAL, A_s[i][j], "MUST_TAKE_EACH_student_" + i + "_class_" + j);
+				model.addConstr(studentMustTakeClassesFromProposedScheduleConstraint, GRB.LESS_EQUAL, mProposedSchedule[j], "CAN_TAKE_class" + j);
 			}
 		}
 	}
@@ -124,13 +140,14 @@ public class StudentScheduleModel {
 			for (int j = 0; j < nClassesOffered; ++j) {
 				GRBLinExpr maxClassCapacityConstraint = new GRBLinExpr();
 				for (int i = 0; i < nStudents; ++i) {
-					maxClassCapacityConstraint.addTerm(1, y_ijk[i][j][k]);
+					maxClassCapacityConstraint.addTerm(1, mOptimizedSchedule[j]);
 				}
-				model.addConstr(maxClassCapacityConstraint, GRB.LESS_EQUAL, x, "X");
+				model.addConstr(maxClassCapacityConstraint, GRB.LESS_EQUAL, MAX_CLASS_CAPACITY - mCurrentEnrollment[j] - 1, "MAX_CLASS_CAPACITY");
 			}
 		}
 	}
 	
+	/*
 	private void setPrerequisiteConstraint() throws GRBException {
 		for (int i = 0; i < nStudents; ++i) {
 			for (int j = 0; j < nClassesOffered; ++j) {
@@ -156,6 +173,7 @@ public class StudentScheduleModel {
 		}
 	}
 	
+	
 	private void setClassAvailabilityConstraint() throws GRBException {
 		for (int i = 0; i < nStudents; ++i) {
 			for (int j = 0; j < nClassesOffered; ++j) {
@@ -169,20 +187,28 @@ public class StudentScheduleModel {
 			}
 		}
 	}
+	*/
+
+	public void setPriorityConstraint() throws GRBException {
+		GRBLinExpr priorityConstraint = new GRBLinExpr();
+		for (int i = 0; i < nClassesOffered; ++i) {
+			priorityConstraint.addTerm(mClassPriorities[i], mOptimizedSchedule[i]);
+		}
+		model.addConstr(priorityConstraint, GRB.LESS_EQUAL, x, "X");
+	}
 	
-	public StudentScheduleModel(int[][] A_s, int nSemesters, int nClassesOffered) {
-		this.A_s = A_s;
-		this.nSemesters = nSemesters;
-		this.nClassesOffered = nClassesOffered;
-		this.nStudents = A_s.length;
+	public StudentScheduleModel(InputModel ip) {
+		this.mInputModel = ip;
+
 		
 		try {
 			init();
 			setMaxCoursesConstraint();
-			setStudentMustTakeEachClassInListConstraint();
+			setStudentMustTakeClassesFromProposedScheduleConstraint();
 			setMaxClassCapacityConstraint();
-			setPrerequisiteConstraint();
-			setClassAvailabilityConstraint();
+			//setPrerequisiteConstraint();
+			//setClassAvailabilityConstraint();
+			setPriorityConstraint();
 			model.setObjective(obj);
 			
 		} catch (GRBException e) {
@@ -199,12 +225,18 @@ public class StudentScheduleModel {
 			if (status == GRB.Status.OPTIMAL) {
 		        System.out.println("X = " +
 		            model.get(GRB.DoubleAttr.ObjVal));
+
+		        OutputModel om = new OutputModel(mOptimizedSchedule);
+	
+		 		om.printToFile();
 		      }
 		} catch (GRBException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
+
+	
 	
 	
 }

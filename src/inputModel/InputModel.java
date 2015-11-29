@@ -18,7 +18,16 @@ public class InputModel {
 		mGson = new GsonBuilder().create();
 	}
 
+	public MasterSchedule getMasterSchedule() {
+		return MS;
+	}
+
+	public StudentSchedule getStudentSchedule() {
+		return SS;
+	}
+
 	public String toString() {
-		return (mGson.toJson(MS));
+		Gson gson = new GsonBuilder().create();
+		return gson.toJson(this);
 	}
 }

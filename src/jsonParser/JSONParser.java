@@ -22,6 +22,7 @@ public class JSONParser {
 		Gson gson = new GsonBuilder().create();
 
 		mInputModel = gson.fromJson(inputString, InputModel.class); 
+		System.out.println(mInputModel.toString());
 	}
 
 	public InputModel getInputModel() {

@@ -1,12 +1,11 @@
-package studentFileReader;
+package jsonFileReader;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
 
-public class StudentFileReader {
+
+public class JSONFileReader {
 	private String mFileName;
 	private String json = "";
 	
@@ -23,14 +22,14 @@ public class StudentFileReader {
 				json += strLine;
 			}
 			
-			
+			System.out.println(json);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
-	public StudentFileReader(String fileName) {
+	public JSONFileReader(String fileName) {
 		
 		this.mFileName = fileName;
 	

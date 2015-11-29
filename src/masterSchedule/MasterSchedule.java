@@ -6,7 +6,7 @@ import com.google.gson.GsonBuilder;
 public class MasterSchedule {
 	//2-d matrix of [STUDENTS][COURSES] for the next semester.
 	private int[][] MASTER_SCHEDULE;
-	private int[] mCurrentEnrollment;
+	private int[] mCurrentEnrollment = null;
 
 	public MasterSchedule(int[][] masterSchedule) {
 		MASTER_SCHEDULE = masterSchedule;
@@ -14,6 +14,12 @@ public class MasterSchedule {
 	}
 
 	public int[] getCurrentEnrollment() {
+
+		//We need to check this because if we use GSON to fill this object, the constructor isn't called.
+		if (mCurrentEnrollment == null) {
+			mCurrentEnrollment = new int[MASTER_SCHEDULE[0].length];
+		}
+
 		for (int i = 0; i < MASTER_SCHEDULE[0].length; ++i) {
 			int tempSum = 0;
 			for (int j = 0; j < MASTER_SCHEDULE.length; ++j) {
